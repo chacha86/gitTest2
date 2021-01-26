@@ -9,6 +9,9 @@ public class Main {
 
 	static ArrayList<Article> articles = new ArrayList<>();
 	static ArrayList<Reply> replies = new ArrayList<>();
+	static ArrayList<Member> members = new ArrayList<>();
+	static Member loginedMember = null;
+	
 	
 	static Scanner sc = new Scanner(System.in);
 	static int articleLastId = 4;
@@ -25,7 +28,13 @@ public class Main {
 		articles.add(article3);
 
 		while (true) {
-			System.out.println("명령어 입력해주세요 :");
+			
+			if(loginedMember == null) {
+				System.out.println("명령어 입력해주세요:");				
+			} else {
+				// System.out.printf() - 권장
+				System.out.println("명령어 입력해주세요[" + loginedMember.getLoginId() + "(" +loginedMember.getNickname() + ")]:");
+			}
 			String str = sc.next();
 			if (str.equals("exit")) {
 				System.out.println("프로그램이 종료됩니다.");
@@ -42,14 +51,55 @@ public class Main {
 				readArticle();
 			} else if (str.equals("search")) {
 				searchArticles();
+			} else if (str.equals("signup")) {
+				signUpMember();
+			} else if (str.equals("signin")) {
+				signInMember();
 			}
 		}
 
 	}
-	
+
+	private static void signInMember() {
+		System.out.println("아이디 :");
+		String inputedId = sc.next();
+		System.out.println("비밀번호 :");
+		String inputedPw = sc.next();
+		boolean isSuccessed = true;
+		
+		for (int i = 0; i < members.size(); i++) {
+			if (inputedId.equals(members.get(i).getLoginId()) && inputedPw.equals(members.get(i).getLoginPw())) {
+				isSuccessed = false;
+				loginedMember = members.get(i);
+				String name = loginedMember.getNickname();
+				System.out.println(name +"님 환영합니다!");
+				break;
+			} 
+		}
+		
+		if(isSuccessed) {
+			System.out.println("잘못된 회원정보입니다.");
+		}
+	}
+
+	private static void signUpMember() {
+		System.out.println("==== 회원 가입을 진행합니다 ====");
+		System.out.println("아이디를 입력해주세요 : ");
+		String loginId = sc.next();
+		System.out.println("비밀번호를 입력해주세요 : ");
+		String loginPw = sc.next();
+		System.out.println("닉네임을 입력해주세요 : ");
+		String nickname = sc.next();
+
+		Member member = new Member(loginId, loginPw, nickname);
+		members.add(member);
+
+		System.out.println("==== 회원가입이 완료되었습니다. ====");
+	}
+
 	// =======================================================================
 	private static void searchArticles() {
-		
+
 		System.out.println("검색 항목을 선택해주세요 (1. 제목, 2. 내용, 3. 제목 + 내용, 4. 작성자) :");
 		int targetFlag = sc.nextInt();
 		System.out.println("검색 키워드를 입력해주세요 :");
@@ -60,17 +110,17 @@ public class Main {
 		for (int i = 0; i < articles.size(); i++) {
 			Article article = articles.get(i);
 			String targetStr = "";
-			
-			if(targetFlag == 1) {
+
+			if (targetFlag == 1) {
 				targetStr = article.getTitle();
-			} else if(targetFlag == 2) {
+			} else if (targetFlag == 2) {
 				targetStr = article.getBody();
-			} else if(targetFlag == 3) {
-				targetStr = article.getTitle() + article.getBody(); 
-			} else if(targetFlag == 4) {
+			} else if (targetFlag == 3) {
+				targetStr = article.getTitle() + article.getBody();
+			} else if (targetFlag == 4) {
 				targetStr = article.getNickname();
 			}
-			
+
 			if (targetStr.contains(keyword)) {
 				searchedArticles.add(article);
 			}
@@ -99,6 +149,7 @@ public class Main {
 
 	}
 
+	// =======================================================================
 	private static void printArticle(Article article) {
 		System.out.println("====== " + article.getId() + "번 게시물 ======");
 		System.out.println("번호 : " + article.getId());
@@ -109,48 +160,47 @@ public class Main {
 		System.out.println("등록날짜 : " + article.getRegDate());
 		System.out.println("========================");
 		System.out.println("==========댓글==========");
-		for(int i = 0; i < replies.size(); i++) {
+		for (int i = 0; i < replies.size(); i++) {
 			Reply reply = replies.get(i);
-			if(article.getId() == reply.getParentId()) {
+			if (article.getId() == reply.getParentId()) {
 				System.out.println("내용 : " + reply.getBody());
 				System.out.println("작성자 : " + reply.getNickname());
-				System.out.println("작성일 : " + reply.getRegDate());				
+				System.out.println("작성일 : " + reply.getRegDate());
 			}
 		}
-		
+
 	}
 
+	// =======================================================================
 	private static void readProcess(Article article) {
-		
-		
-		while(true) {
+
+		while (true) {
 			System.out.println("상세보기 기능을 선택해주세요(1. 댓글 등록, 2. 좋아요, 3. 수정, 4. 삭제, 5. 목록으로) : ");
 			int cmd = sc.nextInt();
-			
-			if(cmd == 1) {
-				 
+
+			if (cmd == 1) {
+
 				System.out.println("댓글 내용을 입력해주세요 : ");
-			    String replyBody = sc.next();
-			    
-			    Reply reply = new Reply(replyLastId, replyBody, "익명", getCurrentDate(), article.getId());
-			    replies.add(reply);
-			    
+				String replyBody = sc.next();
+
+				Reply reply = new Reply(replyLastId, replyBody, "익명", getCurrentDate(), article.getId());
+				replies.add(reply);
+
 				System.out.println("댓글이 등록되었습니다.");
 				printArticle(article);
-				
-				
-			} else if(cmd == 2) {
+
+			} else if (cmd == 2) {
 				System.out.println("[좋아요 기능 구현할 것.]");
-			} else if(cmd == 3) {
+			} else if (cmd == 3) {
 				System.out.println("[수정 기능 구현할 것.]");
-			} else if(cmd == 4) {
+			} else if (cmd == 4) {
 				System.out.println("[삭제 기능 구현할 것.]");
-			} else if(cmd == 5) {
+			} else if (cmd == 5) {
 				break;
-			} 
-			
+			}
+
 		}
-		
+
 	}
 
 	// =======================================================================
