@@ -1,31 +1,16 @@
 package board;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Scanner;
 
 public class Main {
 
-	static ArrayList<Article> articles = new ArrayList<>();
-	static ArrayList<Reply> replies = new ArrayList<>();
-	static ArrayList<Member> members = new ArrayList<>();
+	static MemberDao memberDao = new MemberDao();
+	static ArticleDao articleDao = new ArticleDao();
 	static Member loginedMember = null;
-	
-	
 	static Scanner sc = new Scanner(System.in);
-	static int articleLastId = 4;
-	static int replyLastId = 1;
 
 	public static void main(String[] args) {
-
-		Article article1 = new Article(1, "안녕", "잘가", getCurrentDate(), 0, "홍길동");
-		Article article2 = new Article(2, "제목2", "잘가세요", getCurrentDate(), 0, "이순신");
-		Article article3 = new Article(3, "안녕하세요", "반갑습니다.", getCurrentDate(), 0, "강감찬");
-
-		articles.add(article1);
-		articles.add(article2);
-		articles.add(article3);
 
 		while (true) {
 			
@@ -42,6 +27,7 @@ public class Main {
 			} else if (str.equals("add")) {
 				addArticle();
 			} else if (str.equals("list")) {
+				ArrayList<Article> articles = articleDao.getArticles();
 				printArticles(articles);
 			} else if (str.equals("update")) {
 				updateArticle();
@@ -65,20 +51,14 @@ public class Main {
 		String inputedId = sc.next();
 		System.out.println("비밀번호 :");
 		String inputedPw = sc.next();
-		boolean isSuccessed = true;
+				
+		Member member = memberDao.getMemberByLoginIdAndLoginPw(inputedId, inputedPw);
 		
-		for (int i = 0; i < members.size(); i++) {
-			if (inputedId.equals(members.get(i).getLoginId()) && inputedPw.equals(members.get(i).getLoginPw())) {
-				isSuccessed = false;
-				loginedMember = members.get(i);
-				String name = loginedMember.getNickname();
-				System.out.println(name +"님 환영합니다!");
-				break;
-			} 
-		}
-		
-		if(isSuccessed) {
-			System.out.println("잘못된 회원정보입니다.");
+		if(member == null) {
+			System.out.println("잘못된 회원 정보입니다.");
+		} else {
+			System.out.println(member.getNickname() + "님 환영합니다!!");
+			loginedMember = member;
 		}
 	}
 
@@ -92,8 +72,7 @@ public class Main {
 		String nickname = sc.next();
 
 		Member member = new Member(loginId, loginPw, nickname);
-		members.add(member);
-
+		memberDao.insertMember(member);
 		System.out.println("==== 회원가입이 완료되었습니다. ====");
 	}
 
@@ -105,27 +84,7 @@ public class Main {
 		System.out.println("검색 키워드를 입력해주세요 :");
 		String keyword = sc.next();
 
-		ArrayList<Article> searchedArticles = new ArrayList<>();
-
-		for (int i = 0; i < articles.size(); i++) {
-			Article article = articles.get(i);
-			String targetStr = "";
-
-			if (targetFlag == 1) {
-				targetStr = article.getTitle();
-			} else if (targetFlag == 2) {
-				targetStr = article.getBody();
-			} else if (targetFlag == 3) {
-				targetStr = article.getTitle() + article.getBody();
-			} else if (targetFlag == 4) {
-				targetStr = article.getNickname();
-			}
-
-			if (targetStr.contains(keyword)) {
-				searchedArticles.add(article);
-			}
-		}
-
+		ArrayList<Article> searchedArticles = articleDao.getSearchedArticlesByFlagAndKeyword(targetFlag, keyword);
 		printArticles(searchedArticles);
 	}
 
@@ -133,20 +92,15 @@ public class Main {
 	private static void readArticle() {
 		System.out.println("상세보기 할 게시물 번호 :");
 		int id = sc.nextInt();
-		int targetIdx = getIndexByArticleId(id);
-
-		if (targetIdx != -1) {
-			Article article = articles.get(targetIdx);
-			int cnt = article.getHit() + 1;
-			article.setHit(cnt);
-
+		
+		Article article = articleDao.getArticleById(id);
+			
+		if(article == null) {
+			System.out.println("없는 게시물입니다.");			
+		} else {
 			printArticle(article);
 			readProcess(article);
-
-		} else {
-			System.out.println("없는 게시물입니다.");
 		}
-
 	}
 
 	// =======================================================================
@@ -160,6 +114,10 @@ public class Main {
 		System.out.println("등록날짜 : " + article.getRegDate());
 		System.out.println("========================");
 		System.out.println("==========댓글==========");
+		
+		ArrayList<Reply> replies = new ArrayList<>();
+		replies = articleDao.getReplies();
+		
 		for (int i = 0; i < replies.size(); i++) {
 			Reply reply = replies.get(i);
 			if (article.getId() == reply.getParentId()) {
@@ -183,9 +141,9 @@ public class Main {
 				System.out.println("댓글 내용을 입력해주세요 : ");
 				String replyBody = sc.next();
 
-				Reply reply = new Reply(replyLastId, replyBody, "익명", getCurrentDate(), article.getId());
-				replies.add(reply);
-
+				Reply reply = new Reply(replyBody, "익명", Util.getCurrentDate(), article.getId());
+				articleDao.insertReply(reply);
+				
 				System.out.println("댓글이 등록되었습니다.");
 				printArticle(article);
 
@@ -208,12 +166,10 @@ public class Main {
 
 		System.out.println("삭제할 게시물 번호 :");
 		int id = sc.nextInt();
-		int targetIdx = getIndexByArticleId(id);
-
-		if (targetIdx != -1) {
-
-			articles.remove(targetIdx);
-
+		
+		int rst = articleDao.deleteArticleById(id);
+		
+		if(rst == 1) {
 			System.out.println("삭제가 완료되었습니다.");
 		} else {
 			System.out.println("없는 게시물입니다.");
@@ -224,23 +180,22 @@ public class Main {
 	private static void updateArticle() {
 		System.out.println("수정할 게시물 번호 :");
 		int id = sc.nextInt();
-		int targetIdx = getIndexByArticleId(id);
 
-		if (targetIdx != -1) {
+		Article article = articleDao.getArticleById(id);
+		
+		if(article == null) {
+			System.out.println("없는 게시물입니다.");
+		} else {
 			System.out.println("제목 : ");
 			String title = sc.next(); // 1
 
 			System.out.println("내용 : ");
 			String body = sc.next();
 
-			Article article = new Article(id, title, body, getCurrentDate(), 0, "익명");
-
-			articles.set(targetIdx, article);
-
+			articleDao.updateArticle(id, title, body);
+			
 			System.out.println("수정이 완료되었습니다.");
-
-		} else {
-			System.out.println("없는 게시물입니다.");
+	
 		}
 
 	}
@@ -254,26 +209,11 @@ public class Main {
 		System.out.println("게시물 내용을 입력해주세요 :");
 		String body = sc.next();
 
-		Article article = new Article(articleLastId, title, body, getCurrentDate(), 0, "익명");
-		articleLastId++;
-
-		articles.add(article);
+		Article article = new Article(title, body, Util.getCurrentDate(), 0, "익명");
+		articleDao.insertArticle(article);
 
 		System.out.println("게시물이 등록되었습니다.");
 
-	}
-
-	// =======================================================================
-	public static int getIndexByArticleId(int id) {
-		int targetIdx = -1;
-
-		for (int i = 0; i < articles.size(); i++) {
-			if (articles.get(i).getId() == id) {
-				targetIdx = i;
-			}
-		}
-
-		return targetIdx;
 	}
 
 	// =======================================================================
@@ -294,12 +234,5 @@ public class Main {
 	}
 
 	// =======================================================================
-	private static String getCurrentDate() {
-		SimpleDateFormat format1 = new SimpleDateFormat("yyyy.MM.dd HH:ss");
-		Date time = new Date();
-		String time1 = format1.format(time);
-
-		return time1;
-	}
-	// =======================================================================
 }
+

@@ -18,6 +18,15 @@ public class Article {
 		this.hit = hit;
 		this.nickname = nickname;
 	}
+	
+	public Article(String title, String body, String regDate, int hit, String nickname) {
+		super();
+		this.title = title;
+		this.body = body;
+		this.regDate = regDate;
+		this.hit = hit;
+		this.nickname = nickname;
+	}
 
 	// 게터, 세터
 	

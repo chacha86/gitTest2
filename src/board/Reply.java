@@ -16,6 +16,14 @@ public class Reply {
 		this.regDate = regDate;
 		this.parentId = parentId;
 	}
+	
+	public Reply(String body, String nickname, String regDate, int parentId) {
+		super();
+		this.body = body;
+		this.nickname = nickname;
+		this.regDate = regDate;
+		this.parentId = parentId;
+	}
 
 	public int getParentId() {
 		return parentId;
