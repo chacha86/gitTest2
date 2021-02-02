@@ -6,6 +6,18 @@ import java.util.ArrayList;
 public class MemberDao {
 	
 	ArrayList<Member> members = new ArrayList<>();
+	int lastMemberId = 4;
+	
+	public MemberDao() {
+		
+		Member m1 = new Member(1, "hong123", "1234", "홍길동");
+		Member m2 = new Member(2, "lee123", "6789", "이순신");
+		Member m3 = new Member(3, "kim123", "asdf", "김좌진");
+		
+		members.add(m1);
+		members.add(m2);
+		members.add(m3);
+	}
 	
 	public Member getMemberByLoginIdAndLoginPw(String inputedId, String inputedPw) {
 		for (int i = 0; i < members.size(); i++) {
@@ -18,6 +30,8 @@ public class MemberDao {
 	}
 	
 	public void insertMember(Member member) {
+		member.setId(lastMemberId);
+		lastMemberId++;
 		members.add(member);
 	}
 	

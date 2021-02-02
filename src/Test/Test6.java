@@ -5,16 +5,15 @@ import java.util.ArrayList;
 public class Test6 {
 	public static void main(String args[]) {
 		
+		String str1 = "aaa bbb ccc";
 		
-		ArrayList<String> aList = new ArrayList<>();
-		aList.add("aa");
-		aList.add("bb");
-		aList.add("cc");
+		String[] strs = str1.split(" ");
 		
-		aList.remove("aa");
+		System.out.println(strs[0]);
+		System.out.println(strs[1]);
+		System.out.println(strs[2]);
 		
-		for(int i = 0; i < aList.size(); i++) {
-			System.out.println(aList.get(i));
-		}
+		
+		
 	}
 }

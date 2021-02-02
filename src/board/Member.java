@@ -1,9 +1,19 @@
 package board;
 
 public class Member {
+	
+	private int id;
 	private String loginId;
 	private String loginPw;
 	private String nickname;
+	
+	public Member(int id, String loginId, String loginPw, String nickname) {
+		super();
+		this.id = id;
+		this.loginId = loginId;
+		this.loginPw = loginPw;
+		this.nickname = nickname;
+	}
 	
 	public Member(String loginId, String loginPw, String nickname) {
 		super();
@@ -12,6 +22,12 @@ public class Member {
 		this.nickname = nickname;
 	}
 	
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
 	public String getLoginId() {
 		return loginId;
 	}

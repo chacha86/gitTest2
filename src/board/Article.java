@@ -8,8 +8,9 @@ public class Article {
 	private String regDate; // 등록날짜
 	private int hit; // 조회수
 	private String nickname; // 작성자
-	
-	public Article(int id, String title, String body, String regDate, int hit, String nickname) {
+	private int memberId; // 작성자 번호
+
+	public Article(int id, String title, String body, String regDate, int hit, String nickname, int memberId) {
 		super();
 		this.id = id;
 		this.title = title;
@@ -17,20 +18,28 @@ public class Article {
 		this.regDate = regDate;
 		this.hit = hit;
 		this.nickname = nickname;
+		this.memberId = memberId;
 	}
 	
-	public Article(String title, String body, String regDate, int hit, String nickname) {
+	public Article(String title, String body, String regDate, int hit, String nickname, int memberId) {
 		super();
 		this.title = title;
 		this.body = body;
 		this.regDate = regDate;
 		this.hit = hit;
 		this.nickname = nickname;
+		this.memberId = memberId;
 	}
 
-	// 게터, 세터
-	
-	
+	// 게터, 세터	
+	public int getMemberId() {
+		return memberId;
+	}
+
+	public void setMemberId(int memberId) {
+		this.memberId = memberId;
+	}
+
 	public void setId(int id) {
 		this.id = id;
 	}

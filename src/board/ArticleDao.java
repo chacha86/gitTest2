@@ -7,14 +7,14 @@ public class ArticleDao {
 
 	ArrayList<Article> articles = new ArrayList<>();
 	ArrayList<Reply> replies = new ArrayList<>();
-	static int articleLastId = 4;
-	static int replyLastId = 1;
+	int articleLastId = 4;
+	int replyLastId = 1;
 	
 	// 생성자 이용해서 테스트 데이터 초기화
 	ArticleDao() {
-		Article article1 = new Article(1, "안녕", "잘가", Util.getCurrentDate(), 0, "홍길동");
-		Article article2 = new Article(2, "제목2", "잘가세요", Util.getCurrentDate(), 0, "이순신");
-		Article article3 = new Article(3, "안녕하세요", "반갑습니다.", Util.getCurrentDate(), 0, "강감찬");
+		Article article1 = new Article(1, "안녕", "잘가", Util.getCurrentDate(), 0, "홍길동", 1);
+		Article article2 = new Article(2, "제목2", "잘가세요", Util.getCurrentDate(), 0, "이순신", 2);
+		Article article3 = new Article(3, "안녕하세요", "반갑습니다.", Util.getCurrentDate(), 0, "홍길동", 1);
 
 		articles.add(article1);
 		articles.add(article2);
