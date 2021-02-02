@@ -1,12 +1,8 @@
 package board;
 
-import java.util.Scanner;
-
-public class MemberController {
+public class MemberController extends Controller {
 	
-	static MemberDao memberDao = new MemberDao();
-	Member loginedMember = null;
-	Scanner sc = new Scanner(System.in);
+	MemberDao memberDao = new MemberDao();
 	
 	void doCommand(String str) {
 		
@@ -58,13 +54,4 @@ public class MemberController {
 		memberDao.insertMember(member);
 		System.out.println("==== 회원가입이 완료되었습니다. ====");
 	}
-	
-	public boolean isLogined() {
-		if (loginedMember == null) {
-			System.out.println("로그인을 해야 사용 가능합니다.");
-			return false;
-		}
-		return true;
-	}
-
 }

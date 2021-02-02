@@ -4,15 +4,17 @@ import java.util.Scanner;
 
 public class App {
 	Scanner sc = new Scanner(System.in);
+	Controller controller;
+	Member loginedMember = null;
 	
 	void start() {
 		while (true) {
-//			if(loginedMember == null) {
-//				System.out.println("명령어 입력해주세요:");				
-//			} else {
-//				// System.out.printf() - 권장
-//				System.out.println("명령어 입력해주세요[" + loginedMember.getLoginId() + "(" +loginedMember.getNickname() + ")]:");
-//			}
+			if(loginedMember == null) {
+				System.out.println("명령어 입력해주세요:");				
+			} else {
+				// System.out.printf() - 권장
+				System.out.println("명령어 입력해주세요[" + loginedMember.getLoginId() + "(" + loginedMember.getNickname() + ")]:");
+			}
 			
 			System.out.println("명령어 입력해주세요:");
 			String str = sc.nextLine();
@@ -22,13 +24,13 @@ public class App {
 			String cmd = strBits[1];
 			
 			if(module.equals("article")) {
-				ArticleController ac = new ArticleController();
-				ac.doCommand(cmd);
+				controller = new ArticleController();
 			} else if(module.equals("member")) {
-				MemberController mc = new MemberController();
-				mc.doCommand(cmd);
+				controller = new MemberController();
 			}
 		
+			controller.doCommand(cmd);
+			
 			if (str.equals("exit")) {
 				System.out.println("프로그램이 종료됩니다.");
 				break;

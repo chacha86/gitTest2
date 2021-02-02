@@ -1,13 +1,10 @@
 package board;
 
 import java.util.ArrayList;
-import java.util.Scanner;
 
-public class ArticleController {
+public class ArticleController extends Controller {
 
 	ArticleDao articleDao = new ArticleDao();
-	Member loginedMember = null;
-	Scanner sc = new Scanner(System.in);
 	
 	void doCommand(String str) {
 
@@ -66,15 +63,6 @@ public class ArticleController {
 
 		System.out.println("게시물이 등록되었습니다.");
 
-	}
-
-	// ================================================================
-	public boolean isLogined() {
-		if (loginedMember == null) {
-			System.out.println("로그인을 해야 사용 가능합니다.");
-			return false;
-		}
-		return true;
 	}
 
 	// ================================================================
