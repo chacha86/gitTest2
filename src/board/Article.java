@@ -10,6 +10,13 @@ public class Article {
 	private String nickname; // 작성자
 	private int memberId; // 작성자 번호
 
+	public Article(int id, String title, String nickname) {
+		super();
+		this.id = id;
+		this.title = title;
+		this.nickname = nickname;
+	}
+	
 	public Article(int id, String title, String body, String regDate, int hit, String nickname, int memberId) {
 		super();
 		this.id = id;

@@ -5,10 +5,11 @@ import java.util.Scanner;
 public class App {
 	Scanner sc = new Scanner(System.in);
 	Controller controller;
-	Member loginedMember = null;
+	static Member loginedMember = null;
 	
 	void start() {
 		while (true) {
+			
 			if(loginedMember == null) {
 				System.out.println("명령어 입력해주세요:");				
 			} else {
@@ -16,20 +17,28 @@ public class App {
 				System.out.println("명령어 입력해주세요[" + loginedMember.getLoginId() + "(" + loginedMember.getNickname() + ")]:");
 			}
 			
-			System.out.println("명령어 입력해주세요:");
 			String str = sc.nextLine();
 			
 			String[] strBits = str.split(" ");
-			String module = strBits[0];
-			String cmd = strBits[1];
+			String module = "";
+			String cmd = "";
+			
+			if(strBits.length == 2) {
+				module = strBits[0];
+				cmd = strBits[1];				
+			}
 			
 			if(module.equals("article")) {
 				controller = new ArticleController();
 			} else if(module.equals("member")) {
 				controller = new MemberController();
+			} else {
+				System.out.println("알 수 없는 명령어입니다.");
 			}
-		
-			controller.doCommand(cmd);
+			
+			if(controller != null) {
+				controller.doCommand(cmd);				
+			}
 			
 			if (str.equals("exit")) {
 				System.out.println("프로그램이 종료됩니다.");

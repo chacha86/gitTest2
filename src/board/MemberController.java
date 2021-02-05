@@ -2,7 +2,7 @@ package board;
 
 public class MemberController extends Controller {
 	
-	MemberDao memberDao = new MemberDao();
+	static MemberDao memberDao = new MemberDao();
 	
 	void doCommand(String str) {
 		
@@ -16,12 +16,14 @@ public class MemberController extends Controller {
 			if(isLogined()) {
 				logoutMember();				
 			}
+		} else {
+			System.out.println("알 수 없는 명령어입니다.");
 		}
 	}
 	
 	// =======================================================================
 	private void logoutMember() {
-		loginedMember = null;
+		App.loginedMember = null;
 		System.out.println("로그아웃 되셨습니다.");
 	}
 	// =======================================================================
@@ -37,7 +39,7 @@ public class MemberController extends Controller {
 			System.out.println("잘못된 회원 정보입니다.");
 		} else {
 			System.out.println(member.getNickname() + "님 환영합니다!!");
-			loginedMember = member;
+			App.loginedMember = member;
 		}
 	}
 	// =======================================================================

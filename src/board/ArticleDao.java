@@ -7,14 +7,17 @@ public class ArticleDao {
 
 	ArrayList<Article> articles = new ArrayList<>();
 	ArrayList<Reply> replies = new ArrayList<>();
+	ArrayList<Like> likes = new ArrayList<>();
+	
 	int articleLastId = 4;
 	int replyLastId = 1;
+	int likeLastId = 1;
 	
 	// 생성자 이용해서 테스트 데이터 초기화
 	ArticleDao() {
-		Article article1 = new Article(1, "안녕", "잘가", Util.getCurrentDate(), 0, "홍길동", 1);
-		Article article2 = new Article(2, "제목2", "잘가세요", Util.getCurrentDate(), 0, "이순신", 2);
-		Article article3 = new Article(3, "안녕하세요", "반갑습니다.", Util.getCurrentDate(), 0, "홍길동", 1);
+		Article article1 = new Article(1, "안녕", "잘가", Util.getCurrentDate(), 20, "홍길동", 1);
+		Article article2 = new Article(2, "제목2", "잘가세요", Util.getCurrentDate(), 10, "이순신", 2);
+		Article article3 = new Article(3, "안녕하세요", "반갑습니다.", Util.getCurrentDate(), 30, "홍길동", 1);
 
 		articles.add(article1);
 		articles.add(article2);
@@ -115,5 +118,43 @@ public class ArticleDao {
 		return articles;
 	}
 
+	public void insertLike(Like like) {
+		
+		like.setId(likeLastId);
+		likeLastId++;
+		likes.add(like);
+		
+	}
+	
+	public Like getLikeByArticleIdAndMemberId(int aid, int mid) {
+		for(int i = 0; i < likes.size(); i++) {
+			if(likes.get(i).getAid() == aid && likes.get(i).getMid() == mid) {
+				return likes.get(i);
+			}
+		}
+		
+		return null;
+	}
 
+	public void deleteLike(Like targetLike) {
+		likes.remove(targetLike);
+	}
+
+	public int getCountOfLikeByArticleId(int aid) {
+		int cnt = 0;
+		
+		for(int i = 0; i < likes.size(); i++) {
+			
+			if(likes.get(i).getAid() == aid) {
+				cnt++;
+			}
+		}
+		
+		return cnt;
+	}
+
+	public ArrayList<Like> getLikes() {
+		return this.likes;
+	}
+	
 }

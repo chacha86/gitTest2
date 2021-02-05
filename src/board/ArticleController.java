@@ -1,13 +1,14 @@
 package board;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class ArticleController extends Controller {
 
-	ArticleDao articleDao = new ArticleDao();
+	static ArticleDao articleDao = new ArticleDao();
 	
 	void doCommand(String str) {
-
 		if (str.equals("add")) {
 			if (isLogined()) {
 				addArticle();
@@ -28,7 +29,29 @@ public class ArticleController extends Controller {
 		} else if (str.equals("search")) {
 			searchArticles();
 
+		} else if(str.equals("sort")) {
+			sortArticle();
+			
+		} else {
+			System.out.println("알 수 없는 명령어입니다.");
 		}
+	}
+
+	private void sortArticle() {
+		System.out.println("정렬 대상을 선택해주세요. (1. 좋아요,  2. 조회수)");
+		int sortTarget = Integer.parseInt(sc.nextLine());
+		System.out.println("정렬 방법을 선택해주세요. (1. 오름차순,  2. 내림차순)");
+		int sortType= Integer.parseInt(sc.nextLine());
+		
+		ArrayList<Article> list = articleDao.getArticles();
+		
+		MyComparator myComp = new MyComparator();
+		myComp.sortType = sortType;
+		
+		Collections.sort(list, myComp);
+		
+		printArticles(list);
+		
 	}
 
 	// ================================================================
@@ -57,8 +80,8 @@ public class ArticleController extends Controller {
 		System.out.println("게시물 내용을 입력해주세요 :");
 		String body = sc.nextLine();
 
-		Article article = new Article(title, body, Util.getCurrentDate(), 0, loginedMember.getNickname(),
-				loginedMember.getId());
+		Article article = new Article(title, body, Util.getCurrentDate(), 0, App.loginedMember.getNickname(),
+				App.loginedMember.getId());
 		articleDao.insertArticle(article);
 
 		System.out.println("게시물이 등록되었습니다.");
@@ -125,10 +148,16 @@ public class ArticleController extends Controller {
 				printArticle(article);
 
 			} else if (cmd == 2) {
-				System.out.println("[좋아요 기능 구현할 것.]");
+				
+				
+				if(isLogined()) {
+					checkLike(article);		
+					printArticle(article);
+				}
+				
 			} else if (cmd == 3) {
 
-				if (article.getMemberId() == loginedMember.getId()) {
+				if (article.getMemberId() == App.loginedMember.getId()) {
 					System.out.println("새 제목 : ");
 					String title = sc.nextLine();
 					System.out.println("새 내용 : ");
@@ -142,7 +171,7 @@ public class ArticleController extends Controller {
 					System.out.println("자신의 게시물만 수정 가능합니다.");
 				}
 			} else if (cmd == 4) {
-				if (article.getMemberId() == loginedMember.getId()) {
+				if (article.getMemberId() == App.loginedMember.getId()) {
 
 					articleDao.deleteArticleById(article.getId());
 					break;
@@ -158,14 +187,32 @@ public class ArticleController extends Controller {
 
 	}
 
+	private void checkLike(Article article) {
+		
+		int aid = article.getId(); // 좋아요 체크한 게시물
+		int mid = App.loginedMember.getId();
+		
+		Like targetLike = articleDao.getLikeByArticleIdAndMemberId(aid, mid);
+		if(targetLike == null) {
+			Like newLike = new Like(aid, mid, Util.getCurrentDate());
+			articleDao.insertLike(newLike);
+			System.out.println("해당 게시물을 좋아합니다."); // 좋아요 체크가 없을때			
+		} else {
+			articleDao.deleteLike(targetLike);
+			System.out.println("해당 게시물의 좋아요를 해제합니다."); // 좋아요 체크가 있을 때
+		}
+	}
+
 	// ================================================================
 	private void printArticle(Article article) {
+		
 		System.out.println("====== " + article.getId() + "번 게시물 ======");
 		System.out.println("번호 : " + article.getId());
 		System.out.println("제목 : " + article.getTitle());
 		System.out.println("내용 : " + article.getBody());
 		System.out.println("작성자 : " + article.getNickname());
 		System.out.println("조회수 : " + article.getHit());
+		System.out.println("좋아요 : " + articleDao.getCountOfLikeByArticleId(article.getId()));
 		System.out.println("등록날짜 : " + article.getRegDate());
 		System.out.println("========================");
 		System.out.println("==========댓글==========");
@@ -205,6 +252,7 @@ public class ArticleController extends Controller {
 		if (article == null) {
 			System.out.println("없는 게시물입니다.");
 		} else {
+			System.out.println("ddd");
 			printArticle(article);
 			readProcess(article);
 		}
@@ -215,3 +263,23 @@ public class ArticleController extends Controller {
 		printArticles(articles);
 	}
 }
+
+class MyComparator implements Comparator<Article> {
+
+	int sortType = 1;
+	int sortTarget = 1;
+	
+	@Override
+	public int compare(Article obj1, Article obj2) {
+
+		int rst = obj1.getHit() > obj2.getHit() ? 1 : -1;
+		if(sortType == 2) {
+			rst *= -1; 
+		} 
+		
+		return rst;
+	}
+	
+}
+
+
