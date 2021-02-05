@@ -22,6 +22,12 @@ public class ArticleDao {
 		articles.add(article1);
 		articles.add(article2);
 		articles.add(article3);
+		
+		for(int i = 4; i <= 100; i++) {
+			Article a = new Article(i, "안녕" + i, "잘가" + i, Util.getCurrentDate(), i, "홍길동" + i, 1);
+			articles.add(a);
+		}
+		
 	}
 	
 	public Article getArticleById(int id) {
